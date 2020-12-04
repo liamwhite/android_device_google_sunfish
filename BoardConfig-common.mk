@@ -200,6 +200,10 @@ DEVICE_FRAMEWORK_MANIFEST_FILE := device/google/sunfish/framework_manifest.xml
 # Use mke2fs to create ext4 images
 TARGET_USES_MKE2FS := true
 
+# Kernel modules
+BOARD_VENDOR_KERNEL_MODULES += \
+    $(wildcard vendor/google/sunfish/proprietary/vendor/lib/modules/*.ko)
+
 # dynamic partition
 BOARD_SUPER_PARTITION_SIZE := 9755951104
 BOARD_SUPER_PARTITION_GROUPS := google_dynamic_partitions
