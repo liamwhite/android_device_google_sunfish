@@ -411,8 +411,6 @@ product/lib/vendor.qti.latency@2.0.so
 -product/priv-app/DMService/DMService.apk
 product/priv-app/DMService/lib/arm/libdmengine.so
 product/priv-app/DMService/lib/arm/libdmjavaplugin.so
--product/priv-app/EuiccGoogle/EuiccGoogle.apk;PRESIGNED
--product/priv-app/EuiccSupportPixel/EuiccSupportPixel.apk;PRESIGNED
 -product/priv-app/grilservice/grilservice.apk
 -product/priv-app/HardwareInfo/HardwareInfo.apk
 -product/priv-app/HotwordEnrollmentOKGoogleRT5514/HotwordEnrollmentOKGoogleRT5514.apk;PRESIGNED
