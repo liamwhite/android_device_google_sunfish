@@ -20,7 +20,7 @@ PRODUCT_VENDOR_MOVE_ENABLED := true
 TARGET_BOARD_PLATFORM := sm6150
 MSMSTEPPE := sm6150
 
-PRODUCT_CHECK_ELF_FILES := true
+#PRODUCT_CHECK_ELF_FILES := true
 
 PRODUCT_SOONG_NAMESPACES += \
     device/google/sunfish \
@@ -74,6 +74,12 @@ PRODUCT_COPY_FILES += \
 PRODUCT_PROPERTY_OVERRIDES += \
     ro.control_privapp_permissions=enforce
 
+# RCS
+PRODUCT_PACKAGES += \
+    com.android.ims.rcsmanager \
+    PresencePolling \
+    RcsService
+
 PRODUCT_PACKAGES += \
     messaging
 
@@ -87,25 +93,12 @@ $(call inherit-product, $(SRC_TARGET_DIR)/product/gsi_keys.mk)
 # Installs gsi keys into ramdisk, to boot a developer GSI with verified boot.
 $(call inherit-product, $(SRC_TARGET_DIR)/product/developer_gsi_keys.mk)
 
-ifeq ($(wildcard vendor/google_devices/sunfish/proprietary/device-vendor-sunfish.mk),)
-    BUILD_WITHOUT_VENDOR := true
-endif
-
-ifeq ($(TARGET_PREBUILT_KERNEL),)
-    LOCAL_KERNEL := device/google/sunfish-kernel/Image.lz4
-else
-    LOCAL_KERNEL := $(TARGET_PREBUILT_KERNEL)
-endif
-PRODUCT_VENDOR_KERNEL_HEADERS := device/google/sunfish-kernel/sm7150/kernel-headers
-
-
 PRODUCT_CHARACTERISTICS := nosdcard
 PRODUCT_SHIPPING_API_LEVEL := 28
 
 DEVICE_PACKAGE_OVERLAYS += $(LOCAL_PATH)/overlay
 
 PRODUCT_COPY_FILES += \
-    $(LOCAL_KERNEL):kernel \
     $(LOCAL_PATH)/fstab.hardware:$(TARGET_COPY_OUT_RECOVERY)/root/first_stage_ramdisk/fstab.$(PRODUCT_PLATFORM) \
     $(LOCAL_PATH)/fstab.hardware:$(TARGET_COPY_OUT_VENDOR)/etc/fstab.$(PRODUCT_PLATFORM) \
     $(LOCAL_PATH)/fstab.persist:$(TARGET_COPY_OUT_VENDOR)/etc/fstab.persist \
@@ -125,7 +118,7 @@ PRODUCT_COPY_FILES += \
 MSM_VIDC_TARGET_LIST := sm6150 # Get the color format from kernel headers
 MASTER_SIDE_CP_TARGET_LIST := sm6150 # ION specific settings
 
-ifneq (,$(filter userdebug eng, $(TARGET_BUILD_VARIANT)))
+ifneq (,$(filter eng, $(TARGET_BUILD_VARIANT)))
   PRODUCT_COPY_FILES += \
       $(LOCAL_PATH)/init.hardware.diag.rc.userdebug:$(TARGET_COPY_OUT_VENDOR)/etc/init/hw/init.$(PRODUCT_PLATFORM).diag.rc
   PRODUCT_COPY_FILES += \
@@ -157,7 +150,8 @@ PRODUCT_PRODUCT_PROPERTIES += \
     ro.sys.sdcardfs=1
 
 PRODUCT_PACKAGES += \
-    bootctrl.sm6150
+    bootctrl.sm6150 \
+    bootctrl.sm6150.recovery
 
 PRODUCT_PROPERTY_OVERRIDES += \
     ro.cp_system_other_odex=1
@@ -167,14 +161,6 @@ AB_OTA_POSTINSTALL_CONFIG += \
     POSTINSTALL_PATH_system=system/bin/otapreopt_script \
     FILESYSTEM_TYPE_system=ext4 \
     POSTINSTALL_OPTIONAL_system=true
-
-# Enable update engine sideloading by including the static version of the
-# boot_control HAL and its dependencies.
-PRODUCT_STATIC_BOOT_CONTROL_HAL := \
-    bootctrl.sm6150 \
-    libgptutils \
-    libz \
-    libcutils
 
 PRODUCT_PACKAGES += \
     update_engine_sideload \
@@ -469,6 +455,7 @@ PRODUCT_PACKAGES += \
 # Boot control HAL
 PRODUCT_PACKAGES += \
     android.hardware.boot@1.0-impl \
+    android.hardware.boot@1.0-impl.recovery \
     android.hardware.boot@1.0-service \
 
 # Vibrator HAL
@@ -584,7 +571,7 @@ PRODUCT_PACKAGES += \
     libmaxxaudio \
     libaudiozoom
 
-ifneq (,$(filter userdebug eng, $(TARGET_BUILD_VARIANT)))
+ifneq (,$(filter eng, $(TARGET_BUILD_VARIANT)))
 PRODUCT_PACKAGES += \
     tinyplay \
     tinycap \
@@ -626,10 +613,10 @@ PRODUCT_PROPERTY_OVERRIDES += \
     audio.snd_card.open.retries=50
 
 
-ifneq (,$(filter userdebug eng, $(TARGET_BUILD_VARIANT)))
+ifneq (,$(filter eng, $(TARGET_BUILD_VARIANT)))
 # Subsystem ramdump
 PRODUCT_PROPERTY_OVERRIDES += \
-    persist.vendor.sys.ssr.enable_ramdumps=1
+    persist.vendor.sys.ssr.enable_ramdumps=0
 endif
 
 # Subsystem silent restart
@@ -644,13 +631,13 @@ PRODUCT_PROPERTY_OVERRIDES += \
 endif
 
 # setup dalvik vm configs
-$(call inherit-product, frameworks/native/build/phone-xhdpi-2048-dalvik-heap.mk)
+$(call inherit-product, frameworks/native/build/phone-xhdpi-6144-dalvik-heap.mk)
 
 # Use the default charger mode images
 PRODUCT_PACKAGES += \
     charger_res_images
 
-ifneq (,$(filter userdebug eng, $(TARGET_BUILD_VARIANT)))
+ifneq (,$(filter eng, $(TARGET_BUILD_VARIANT)))
 # b/36703476: Set default log size to 1M
 PRODUCT_PROPERTY_OVERRIDES += \
   ro.logd.size=1M
@@ -732,7 +719,7 @@ PRODUCT_PROPERTY_OVERRIDES += \
     ro.vendor.radio.log_prefix="modem_log_"
 
 # Enable modem logging for debug
-ifneq (,$(filter userdebug eng, $(TARGET_BUILD_VARIANT)))
+ifneq (,$(filter eng, $(TARGET_BUILD_VARIANT)))
 PRODUCT_PROPERTY_OVERRIDES += \
     persist.vendor.sys.modem.diag.mdlog=true \
     persist.vendor.sys.modem.diag.mdlog_br_num=5
@@ -749,7 +736,7 @@ PRODUCT_PRODUCT_PROPERTIES += \
     ro.lmk.log_stats=true
 
 # default usb oem functions
-ifneq (,$(filter userdebug eng, $(TARGET_BUILD_VARIANT)))
+ifneq (,$(filter eng, $(TARGET_BUILD_VARIANT)))
   PRODUCT_PROPERTY_OVERRIDES += \
       persist.vendor.usb.usbradio.config=diag
 endif
@@ -852,12 +839,6 @@ PRODUCT_PACKAGES += $(HIDL_WRAPPER)
 # Increment the SVN for any official public releases
 PRODUCT_PROPERTY_OVERRIDES += \
 	ro.vendor.build.svn=4
-
-# ZRAM writeback
-PRODUCT_PROPERTY_OVERRIDES += \
-    ro.zram.mark_idle_delay_mins=60 \
-    ro.zram.first_wb_delay_mins=180 \
-    ro.zram.periodic_wb_delay_hours=24
 
 PRODUCT_COPY_FILES += \
     $(LOCAL_PATH)/powerhint.json:$(TARGET_COPY_OUT_VENDOR)/etc/powerhint.json

@@ -724,7 +724,6 @@ service bugreport /system/bin/dumpstate -d -p -B -z \
     class main
     disabled
     oneshot
-    keycodes 114 115 116
 
 on property:ro.boot.hardware.dsds=1
     setprop persist.radio.multisim.config dsds
@@ -746,17 +745,17 @@ service vendor.theme_clear /vendor/bin/misc_writer --vendor-space-offset 0 --hex
     disabled
     oneshot
 
-# Set dark boot flag on dark mode (UiModeManager.MODE_NIGHT_YES == 2).
-on property:persist.sys.theme=2
+# Set the dark splash on init
+on init
     start vendor.theme_set
 
 # Clear the dark boot flag on light mode (UiModeManager.MODE_NIGHT_NO == 1) or auto mode
 # (UiModeManager.MODE_NIGHT_AUTO == 0).
-on property:persist.sys.theme=1
-    start vendor.theme_clear
+#on property:persist.sys.theme=1
+#    start vendor.theme_clear
 
-on property:persist.sys.theme=0
-    start vendor.theme_clear
+#on property:persist.sys.theme=0
+#    start vendor.theme_clear
 
 # Write the enable sota magic (`enable-sota`, or 0x656e61626c652d736f7461 in hex string) to /misc
 # partition. Offset 32 in vendor space is effectively offset 2048 in /misc partition.

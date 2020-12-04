@@ -62,7 +62,6 @@ BOARD_BOOT_HEADER_VERSION := 2
 BOARD_MKBOOTIMG_ARGS += --header_version $(BOARD_BOOT_HEADER_VERSION)
 
 # DTBO partition definitions
-BOARD_PREBUILT_DTBOIMAGE := device/google/sunfish-kernel/dtbo.img
 BOARD_DTBOIMG_PARTITION_SIZE := 8388608
 
 TARGET_NO_KERNEL := false
@@ -117,11 +116,9 @@ BOARD_FLASH_BLOCK_SIZE := 131072
 BOARD_ROOT_EXTRA_SYMLINKS := /vendor/dsp:/dsp
 BOARD_ROOT_EXTRA_SYMLINKS += /mnt/vendor/persist:/persist
 
-include device/google/sunfish-sepolicy/sunfish-sepolicy.mk
+include device/google/sunfish/sepolicy/sunfish-sepolicy.mk
 
 TARGET_FS_CONFIG_GEN := device/google/sunfish/config.fs
-
-BOARD_EXT4_SHARE_DUP_BLOCKS := true
 
 QCOM_BOARD_PLATFORMS += sm6150
 MSMSTEPPE = sm6150
@@ -162,7 +159,7 @@ WPA_SUPPLICANT_VERSION := VER_0_8_X
 BOARD_WPA_SUPPLICANT_PRIVATE_LIB := lib_driver_cmd_$(BOARD_WLAN_DEVICE)
 BOARD_HOSTAPD_PRIVATE_LIB := lib_driver_cmd_$(BOARD_WLAN_DEVICE)
 WIFI_HIDL_FEATURE_AWARE := true
-WIFI_HIDL_FEATURE_DUAL_INTERFACE:= true
+WIFI_HIDL_FEATURE_DUAL_INTERFACE := true
 
 # Audio
 BOARD_USES_ALSA_AUDIO := true
@@ -194,10 +191,6 @@ TARGET_USES_DISPLAY_RENDER_INTENTS := true
 TARGET_USES_COLOR_METADATA := true
 TARGET_USES_DRM_PP := true
 
-# Misc
-TARGET_USES_HARDWARE_QCOM_BOOTCTRL := true
-
-
 # Vendor Interface Manifest
 DEVICE_MANIFEST_FILE := device/google/sunfish/manifest.xml
 DEVICE_MATRIX_FILE := device/google/sunfish/compatibility_matrix.xml
@@ -206,27 +199,6 @@ DEVICE_FRAMEWORK_MANIFEST_FILE := device/google/sunfish/framework_manifest.xml
 
 # Use mke2fs to create ext4 images
 TARGET_USES_MKE2FS := true
-
-# Kernel modules
-ifeq (,$(filter-out sunfish_kasan, $(TARGET_PRODUCT)))
-BOARD_VENDOR_KERNEL_MODULES += \
-    $(wildcard device/google/sunfish-kernel/kasan/*.ko)
-else ifeq (,$(filter-out sunfish_kernel_debug_memory, $(TARGET_PRODUCT)))
-BOARD_VENDOR_KERNEL_MODULES += \
-    $(wildcard device/google/sunfish-kernel/debug_memory/*.ko)
-else ifeq (,$(filter-out sunfish_kernel_debug_locking, $(TARGET_PRODUCT)))
-BOARD_VENDOR_KERNEL_MODULES += \
-    $(wildcard device/google/sunfish-kernel/debug_locking/*.ko)
-else ifeq (,$(filter-out sunfish_kernel_debug_hang, $(TARGET_PRODUCT)))
-BOARD_VENDOR_KERNEL_MODULES += \
-    $(wildcard device/google/sunfish-kernel/debug_hang/*.ko)
-else ifeq (,$(filter-out sunfish_kernel_debug_api, $(TARGET_PRODUCT)))
-BOARD_VENDOR_KERNEL_MODULES += \
-    $(wildcard device/google/sunfish-kernel/debug_api/*.ko)
-else
-BOARD_VENDOR_KERNEL_MODULES += \
-    $(wildcard device/google/sunfish-kernel/*.ko)
-endif
 
 # dynamic partition
 BOARD_SUPER_PARTITION_SIZE := 9755951104
@@ -242,22 +214,9 @@ BOARD_GOOGLE_DYNAMIC_PARTITIONS_SIZE := 4873781248
 # Set error limit to BOARD_SUPER_PARTITON_SIZE - 500MB
 BOARD_SUPER_PARTITION_ERROR_LIMIT := 9231663104
 
-# DTB
-ifeq (,$(filter-out sunfish_kasan, $(TARGET_PRODUCT)))
-BOARD_PREBUILT_DTBIMAGE_DIR := device/google/sunfish-kernel/kasan
-else ifeq (,$(filter-out sunfish_kernel_debug_memory, $(TARGET_PRODUCT)))
-BOARD_PREBUILT_DTBIMAGE_DIR := device/google/sunfish-kernel/debug_memory
-else ifeq (,$(filter-out sunfish_kernel_debug_locking, $(TARGET_PRODUCT)))
-BOARD_PREBUILT_DTBIMAGE_DIR := device/google/sunfish-kernel/debug_locking
-else ifeq (,$(filter-out sunfish_kernel_debug_hang, $(TARGET_PRODUCT)))
-BOARD_PREBUILT_DTBIMAGE_DIR := device/google/sunfish-kernel/debug_hang
-else ifeq (,$(filter-out sunfish_kernel_debug_api, $(TARGET_PRODUCT)))
-BOARD_PREBUILT_DTBIMAGE_DIR := device/google/sunfish-kernel/debug_api
-else
-BOARD_PREBUILT_DTBIMAGE_DIR := device/google/sunfish-kernel
-endif
-
 # Testing related defines
 #BOARD_PERFSETUP_SCRIPT := platform_testing/scripts/perf-setup/s5-setup.sh
 
 -include vendor/google_devices/sunfish/proprietary/BoardConfigVendor.mk
+
+-include device/google/sunfish/BoardConfig-lineage.mk
