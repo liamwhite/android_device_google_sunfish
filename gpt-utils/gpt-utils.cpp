@@ -41,7 +41,12 @@
 #include <scsi/ufs/ioctl.h>
 #include <scsi/ufs/ufs.h>
 #include <unistd.h>
+
+#undef RENAME_NOREPLACE
+#undef RENAME_EXCHANGE
+#undef RENAME_WHITEOUT
 #include <linux/fs.h>
+
 #include <limits.h>
 #include <dirent.h>
 #include <inttypes.h>
