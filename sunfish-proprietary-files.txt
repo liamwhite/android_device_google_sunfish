@@ -118,7 +118,6 @@ product/etc/fs_config_files
 product/etc/fstab.postinstall
 product/etc/group
 product/etc/libnfc-nci.conf
-product/etc/NOTICE.xml.gz
 product/etc/passwd
 product/etc/permissions/android.hardware.telephony.euicc.xml
 product/etc/permissions/android.software.verified_boot.xml
@@ -139,7 +138,6 @@ product/etc/permissions/obdm_permissions.xml
 product/etc/permissions/privapp-permissions-google-p.xml
 product/etc/permissions/split-permissions-google.xml
 product/etc/permissions/vendor.qti.hardware.data.connection-V1.0-java.xml
-product/etc/permissions/vendor.qti.hardware.data.connection-V1.1-java.xml
 product/etc/permissions/vzw_mvs_permissions.xml
 product/etc/preferred-apps/google.xml
 product/etc/res/images/charger/battery_fail.png

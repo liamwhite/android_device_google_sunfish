@@ -114,7 +114,7 @@ BOARD_BOOTIMAGE_PARTITION_SIZE := 0x04000000
 
 BOARD_FLASH_BLOCK_SIZE := 131072
 
-BOARD_ROOT_EXTRA_SYMLINKS := /vendor/dsp:/dsp
+#BOARD_ROOT_EXTRA_SYMLINKS := /vendor/dsp:/dsp
 BOARD_ROOT_EXTRA_SYMLINKS += /mnt/vendor/persist:/persist
 
 include device/google/sunfish/sepolicy/sunfish-sepolicy.mk
